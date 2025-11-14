@@ -1,0 +1,200 @@
+/* ===== Basic reset ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.5;
+  color: #222222;
+  background-color: #f5f6fb;
+}
+
+/* ===== Header (same as before) ===== */
+
+header {
+  display: flex;
+  align-items: center;
+  padding: 8px 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #dddddd;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo img {
+  height: 75px;
+  display: block;
+}
+
+header [role="button"] {
+  margin-left: 16px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #f42a39;
+  border: 1px solid #f42a39;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+header [role="button"]:hover {
+  background-color: #c3202c;
+  border-color: #c3202c;
+}
+
+header h1 {
+  margin: 0 0 0 auto;
+  font-size: 14px;
+  font-weight: normal;
+  color: #666666;
+  white-space: nowrap;
+}
+
+/* ===== Page title ===== */
+
+h4 {
+  max-width: 1100px;
+  margin: 24px auto 12px;
+  padding: 0 24px;
+  font-size: 20px;
+  color: #002399;
+  text-align: center;
+}
+
+/* ===== Table ===== */
+
+table.grades {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 32px;
+  border-collapse: collapse;       /* full grid lines */
+  background-color: #ffffff;       /* whole table block white */
+  font-size: 14px;
+  text-align: center;
+  border: 0.8px solid #dcdcdc;
+}
+
+/* Head row */
+
+table.grades thead {
+  background-color: #002399;
+  color: #ffffff;
+}
+
+table.grades th,
+table.grades td {
+  padding: 8px 10px;
+  border: 1px solid #e1e1e1;       /* lines between all cells */
+}
+
+/* Subject column (still centered like you asked) */
+/* If you want left-aligned subjects, change text-align to left here */
+table.grades th:nth-child(2),
+table.grades td:nth-child(2) {
+  text-align: center;
+}
+
+/* Make bloc number cell stand out a bit */
+table.grades .bloc-cell {
+  font-weight: bold;
+  background-color: #f3f4ff;
+}
+
+/* Stronger separator line between blocs */
+table.grades tbody + tbody tr:first-child td {
+  border-top: 1.5px solid #b9b9b9;
+}
+
+/* Inputs */
+
+table.grades input[type="number"] {
+  width: 80px;
+  padding: 3px;
+  font-size: 13px;
+  border: 1px solid #cccccc;
+  border-radius: 15px;
+  text-align: center;
+}
+
+table.grades input[type="number"]:focus {
+  outline: none;
+  border-color: #002399;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+  header {
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    margin-top: 8px;
+    margin-left: 0;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 700px) {
+  table.grades {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  h4 {
+    padding: 0 16px;
+  }
+}
+
+/* en zibilic */
+.grade-dropdown {
+  position: relative;
+  margin-left: 16px; 
+}
+/* en zibil menuic */
+.grade-menu {
+  position: absolute;
+  top: 100%;          
+  left: 0;
+  margin-top: 6px;
+  min-width: 230px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 6px 0;
+  display: none;
+  z-index: 1000;
+}
+
+/*anchori linkery */
+.grade-menu a {
+  display: block;
+  padding: 6px 12px;
+  font-size: 13px;
+  text-decoration: none;
+  color: #002399;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.grade-menu a:hover {
+  background-color: #f5f6fb;
+}
+
+/* Show menu on hover over button or container */
+.grade-dropdown:hover .grade-menu {
+  display: block;
+}
