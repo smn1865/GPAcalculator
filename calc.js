@@ -165,7 +165,7 @@ function updateBlocCalculation(blocBody) {
 
     // --- Part 1: Current MOG Calculation ---
     const mogCell = blocBody.querySelector('.mog');
-    const resultCell = blocBody.querySelector('result');
+    const resultCell = blocBody.querySelector('.result');
     
     let currentMog = 0;
     
@@ -175,40 +175,7 @@ function updateBlocCalculation(blocBody) {
     } else {
         mogCell.textContent = '\u2014';
     }
-
-    // --- Part 2: MOG Need Calculation ---
-    const mogNeedCell = blocBody.querySelector('.mog-need');
     
-    if (countedEcts === 0) {
-        mogNeedCell.textContent = '\u2014';
-    } else if (countedEcts === completedEcts) {
-        mogNeedCell.textContent = 'All Done';
-    } else {
-        let hintOutput = '';
-        const totalRemainingEcts = countedEcts - completedEcts;
-
-        incompleteSubjects.forEach(subject => {
-            const subjectEcts = subject.ects;
-            const remainingEctsExcludingThisSubject = totalRemainingEcts - subjectEcts;
-            
-            const gradePointsFromOtherIncomplete = remainingEctsExcludingThisSubject * TARGET_PASSING_GRADE;
-            const knownGradePoints = totalWeightedGradeCompleted + gradePointsFromOtherIncomplete;
-            const requiredGradePointsFromSubject = (TARGET_MOG * countedEcts) - knownGradePoints; 
-            const requiredAvgForSubject = requiredGradePointsFromSubject / subjectEcts;
-            
-            const subjectName = subject.row.querySelector('td:nth-child(2)').textContent.trim();
-
-            if (requiredAvgForSubject <= 0) {
-                hintOutput += `${subjectName}: 0.0\n`;
-            } else if (requiredAvgForSubject > 20) {
-                hintOutput += `${subjectName}: Impossible\n`;
-            } else {
-                hintOutput += `${subjectName}: Need ${requiredAvgForSubject.toFixed(2)}\n`;
-            }
-        });
-        
-        mogNeedCell.textContent = hintOutput.trim().replace(/\n/g, ' | ');
-    }
 
     // --- Part 3: Result Fix (Check against counted ECTS) ---
     if (countedEcts > 0) {
@@ -291,6 +258,101 @@ function updateOverallGPA() {
     } else if (totalEctsCompleted > 0) {
         // Some subjects are complete, others are not (Incomplete Status)
         const overallGpaCurrent = totalWeightedMog / totalEctsCompleted; // Calculate current MOG based only on completed modules
+        overallGpaElement.textContent = `${overallGpaCurrent.toFixed(2)} (${totalEctsCompleted}/${totalEctsCounted} ECTS complete)`;
+        overallGpaElement.style.color = 'orange';
+    } else {
+        // Nothing is complete
+        overallGpaElement.textContent = '\u2014';
+        overallGpaElement.style.color = 'black';
+    }
+}
+// --- Overall GPA Calculation Fix ---
+
+/**
+ * Calculates the Overall Semester GPA, weighted by the total ECTS of each module,
+ * and displays the result in the element with class 'overall'.
+ */
+function updateOverallGPA() {
+    const blocBodies = document.querySelectorAll('.bloc');
+    // Targeting the element with class 'overall' as requested
+    const overallGpaElement = document.querySelector('.overall'); 
+    
+    // Fallback if the element isn't found
+    if (!overallGpaElement) return;
+
+    let totalWeightedMog = 0;
+    let totalEctsCounted = 0;
+    let totalEctsCompleted = 0;
+    // --- New Flag ---
+    let isAnyBlocNonValide = false;
+
+    blocBodies.forEach(blocBody => {
+        const rows = blocBody.querySelectorAll('tr[data-subject-id]');
+        const mog = parseFloat(blocBody.querySelector('.mog').textContent);
+        const result = blocBody.querySelector('.result').textContent;
+        
+        let currentBlocEcts = 0;
+        let currentBlocCompletedEcts = 0;
+        
+        rows.forEach(row => {
+            const ects = parseFloat(row.querySelector('.ects').textContent);
+            const finalInput = row.querySelector('.final');
+            const midtermInput = row.querySelector('.midterm');
+            
+            if (!row.querySelector('.midterm').disabled && !isNaN(ects) && ects > 0) {
+                 currentBlocEcts += ects;
+                 
+                 const isCompleted = !isNaN(parseFloat(midtermInput.value)) && !isNaN(parseFloat(finalInput.value));
+                 if (isCompleted) {
+                     currentBlocCompletedEcts += ects;
+                 }
+            }
+        });
+        
+        totalEctsCounted += currentBlocEcts;
+
+        if (result === 'Validé' || result === 'Non Validé') {
+            if (!isNaN(mog) && currentBlocEcts > 0) {
+                totalWeightedMog += mog * currentBlocEcts;
+                totalEctsCompleted += currentBlocEcts;
+            }
+            // --- Logic to set the new flag ---
+            if (result === 'Non Validé') {
+                isAnyBlocNonValide = true;
+            }
+        }
+    });
+
+    if (totalEctsCounted === 0) {
+        overallGpaElement.textContent = '\u2014';
+        overallGpaElement.style.color = 'black';
+        return;
+    }
+
+    const TOTAL_SEMESTER_ECTS = 30; 
+    
+    if (totalEctsCompleted === totalEctsCounted) {
+        // ALL active subjects are fully complete, calculate the FINAL GPA
+        
+        // --- Apply the new Non Validé check here ---
+        if (isAnyBlocNonValide) {
+            overallGpaElement.textContent = 'Non Validé';
+            overallGpaElement.style.color = 'red';
+        } else {
+            const finalGpa = totalWeightedMog / TOTAL_SEMESTER_ECTS; 
+            
+            overallGpaElement.textContent = finalGpa.toFixed(2);
+            overallGpaElement.style.color = finalGpa >= TARGET_MOG ? 'green' : 'red';
+        }
+        
+    } else if (totalEctsCompleted > 0) {
+        // Some subjects are complete, others are not (Incomplete Status).
+        // The "Non Validé" status shouldn't override the "In Progress" status yet.
+        const overallGpaCurrent = totalWeightedMog / totalEctsCompleted; 
+        
+        // Note: I'm updating the denominator here to use TOTAL_SEMESTER_ECTS (30) as per the previous logic in the original code,
+        // but often the intermediate status is shown over the counted ECTS (totalEctsCounted). I'm keeping the 
+        // totalEctsCounted for consistency with the last version's intermediate display.
         overallGpaElement.textContent = `${overallGpaCurrent.toFixed(2)} (${totalEctsCompleted}/${totalEctsCounted} ECTS complete)`;
         overallGpaElement.style.color = 'orange';
     } else {
