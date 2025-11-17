@@ -158,15 +158,21 @@ table.grades input[type="number"]:focus {
   }
 }
 
-/* en zibilic */
+/* container for all grade buttons */
 .grade-dropdown {
-  position: relative;
-  margin-left: 16px; 
+  display: flex;
+  gap: 16px;
 }
-/* en zibil menuic */
+
+/* one wrapper per button + its menu */
+.grade-group {
+  position: relative;
+}
+
+/* menu */
 .grade-menu {
   position: absolute;
-  top: 100%;          
+  top: 100%;
   left: 0;
   margin-top: 6px;
   min-width: 230px;
@@ -179,7 +185,7 @@ table.grades input[type="number"]:focus {
   z-index: 1000;
 }
 
-/*anchori linkery */
+/* links in menu */
 .grade-menu a {
   display: block;
   padding: 6px 12px;
@@ -194,7 +200,9 @@ table.grades input[type="number"]:focus {
   background-color: #f5f6fb;
 }
 
-/* Show menu on hover over button or container */
-.grade-dropdown:hover .grade-menu {
+/* show menu while hovering its button or the menu itself */
+.grade-group:hover .grade-menu,
+.grade-group:focus-within .grade-menu,
+.grade-menu:hover {
   display: block;
 }

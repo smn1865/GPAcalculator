@@ -239,3 +239,53 @@ header h1 {
     padding: 16px;
   }
 }
+
+
+/* container for all grade buttons */
+.grade-dropdown {
+  display: flex;
+  gap: 16px;
+}
+
+/* one wrapper per button + its menu */
+.grade-group {
+  position: relative;
+}
+
+/* menu */
+.grade-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  min-width: 230px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 6px 0;
+  display: none;
+  z-index: 1000;
+}
+
+/* links in menu */
+.grade-menu a {
+  display: block;
+  padding: 6px 12px;
+  font-size: 13px;
+  text-decoration: none;
+  color: #002399;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.grade-menu a:hover {
+  background-color: #f5f6fb;
+}
+
+/* show menu while hovering its button or the menu itself */
+.grade-group:hover .grade-menu,
+.grade-group:focus-within .grade-menu,
+.grade-menu:hover {
+  display: block;
+}
