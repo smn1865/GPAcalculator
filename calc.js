@@ -132,8 +132,6 @@ function updateBlocCalculation(blocBody) {
     let countedEcts = 0; // ECTS that must be completed for the bloc (excludes unused electives)
     let completedEcts = 0; // ECTS for subjects with full grades
     
-    const incompleteSubjects = []; 
-
     rows.forEach(row => {
         const ectsCell = row.querySelector('.ects');
         const gpaCell = row.querySelector('.gpa'); 
@@ -196,128 +194,60 @@ function updateBlocCalculation(blocBody) {
 }
 
 
-// --- Overall GPA Calculation Fix ---
+// --- Overall GPA Calculation ---
 
 /**
- * Calculates the Overall Semester GPA, weighted by the total ECTS of each module.
+ * Calculates the overall semester GPA and writes it into the summary cell.
  */
 function updateOverallGPA() {
     const blocBodies = document.querySelectorAll('.bloc');
     const overallGpaElement = document.getElementById('overall-gpa');
-    
-    let totalWeightedMog = 0;
-    let totalEctsCounted = 0; // Total ECTS for all active subjects in the semester
-    let totalEctsCompleted = 0; // ECTS from modules with full grades
 
-    blocBodies.forEach(blocBody => {
-        const rows = blocBody.querySelectorAll('tr[data-subject-id]');
-        const mog = parseFloat(blocBody.querySelector('.mog').textContent);
-        const result = blocBody.querySelector('.result').textContent;
-        
-        let currentBlocEcts = 0;
-        let currentBlocCompletedEcts = 0;
-        
-        rows.forEach(row => {
-            const ects = parseFloat(row.querySelector('.ects').textContent);
-            const gpaCell = row.querySelector('.gpa'); 
-            const finalInput = row.querySelector('.final');
-            const midtermInput = row.querySelector('.midterm');
-            
-            if (!row.querySelector('.midterm').disabled && !isNaN(ects) && ects > 0) {
-                 currentBlocEcts += ects; // ECTS of subjects currently being counted
-                 
-                 const isCompleted = !isNaN(parseFloat(midtermInput.value)) && !isNaN(parseFloat(finalInput.value));
-                 if (isCompleted) {
-                     currentBlocCompletedEcts += ects;
-                 }
-            }
-        });
-        
-        // This is the total ECTS needed for this module to be considered complete
-        totalEctsCounted += currentBlocEcts;
-
-        if (result === 'Validé' || result === 'Non Validé') {
-            // Module is fully complete and has a final MOG
-            if (!isNaN(mog) && currentBlocEcts > 0) {
-                totalWeightedMog += mog * currentBlocEcts;
-                totalEctsCompleted += currentBlocEcts;
-            }
-        }
-    });
-
-    if (totalEctsCounted === 0) {
-        overallGpaElement.textContent = '\u2014';
+    if (!overallGpaElement || blocBodies.length === 0) {
         return;
     }
-
-    if (totalEctsCompleted === totalEctsCounted) {
-        // ALL active subjects are fully complete
-        const overallGpa = totalWeightedMog / totalEctsCompleted;
-        overallGpaElement.textContent = overallGpa.toFixed(2);
-        overallGpaElement.style.color = overallGpa >= TARGET_MOG ? 'green' : 'red';
-    } else if (totalEctsCompleted > 0) {
-        // Some subjects are complete, others are not (Incomplete Status)
-        const overallGpaCurrent = totalWeightedMog / totalEctsCompleted; // Calculate current MOG based only on completed modules
-        overallGpaElement.textContent = `${overallGpaCurrent.toFixed(2)} (${totalEctsCompleted}/${totalEctsCounted} ECTS complete)`;
-        overallGpaElement.style.color = 'orange';
-    } else {
-        // Nothing is complete
-        overallGpaElement.textContent = '\u2014';
-        overallGpaElement.style.color = 'black';
-    }
-}
-// --- Overall GPA Calculation Fix ---
-
-/**
- * Calculates the Overall Semester GPA, weighted by the total ECTS of each module,
- * and displays the result in the element with class 'overall'.
- */
-function updateOverallGPA() {
-    const blocBodies = document.querySelectorAll('.bloc');
-    // Targeting the element with class 'overall' as requested
-    const overallGpaElement = document.querySelector('.overall'); 
-    
-    // Fallback if the element isn't found
-    if (!overallGpaElement) return;
 
     let totalWeightedMog = 0;
     let totalEctsCounted = 0;
     let totalEctsCompleted = 0;
-    // --- New Flag ---
     let isAnyBlocNonValide = false;
 
     blocBodies.forEach(blocBody => {
         const rows = blocBody.querySelectorAll('tr[data-subject-id]');
-        const mog = parseFloat(blocBody.querySelector('.mog').textContent);
-        const result = blocBody.querySelector('.result').textContent;
-        
-        let currentBlocEcts = 0;
-        let currentBlocCompletedEcts = 0;
-        
+        const mogCell = blocBody.querySelector('.mog');
+        const resultCell = blocBody.querySelector('.result');
+        const mogText = mogCell ? mogCell.textContent : '';
+        const resultText = resultCell ? resultCell.textContent.trim() : '';
+
+        const mog = parseFloat(mogText);
+        let blocEcts = 0;
+        let blocCompletedEcts = 0;
+
         rows.forEach(row => {
             const ects = parseFloat(row.querySelector('.ects').textContent);
-            const finalInput = row.querySelector('.final');
             const midtermInput = row.querySelector('.midterm');
-            
-            if (!row.querySelector('.midterm').disabled && !isNaN(ects) && ects > 0) {
-                 currentBlocEcts += ects;
-                 
-                 const isCompleted = !isNaN(parseFloat(midtermInput.value)) && !isNaN(parseFloat(finalInput.value));
-                 if (isCompleted) {
-                     currentBlocCompletedEcts += ects;
-                 }
+            const finalInput = row.querySelector('.final');
+
+            if (!midtermInput || !finalInput) return;
+
+            if (!midtermInput.disabled && !isNaN(ects) && ects > 0) {
+                blocEcts += ects;
+
+                const hasMidterm = !isNaN(parseFloat(midtermInput.value));
+                const hasFinal = !isNaN(parseFloat(finalInput.value));
+                if (hasMidterm && hasFinal) {
+                    blocCompletedEcts += ects;
+                }
             }
         });
-        
-        totalEctsCounted += currentBlocEcts;
 
-        if (result === 'Validé' || result === 'Non Validé') {
-            if (!isNaN(mog) && currentBlocEcts > 0) {
-                totalWeightedMog += mog * currentBlocEcts;
-                totalEctsCompleted += currentBlocEcts;
-            }
-            // --- Logic to set the new flag ---
-            if (result === 'Non Validé') {
+        totalEctsCounted += blocEcts;
+
+        if ((resultText === 'Validé' || resultText === 'Non Validé') && blocEcts > 0 && !isNaN(mog)) {
+            totalWeightedMog += mog * blocEcts;
+            totalEctsCompleted += blocEcts;
+
+            if (resultText === 'Non Validé') {
                 isAnyBlocNonValide = true;
             }
         }
@@ -325,40 +255,29 @@ function updateOverallGPA() {
 
     if (totalEctsCounted === 0) {
         overallGpaElement.textContent = '\u2014';
-        overallGpaElement.style.color = 'black';
+        overallGpaElement.style.color = '#222222';
         return;
     }
 
-    const TOTAL_SEMESTER_ECTS = 30; 
-    
-    if (totalEctsCompleted === totalEctsCounted) {
-        // ALL active subjects are fully complete, calculate the FINAL GPA
-        
-        // --- Apply the new Non Validé check here ---
+    if (totalEctsCompleted === totalEctsCounted && totalEctsCompleted > 0) {
         if (isAnyBlocNonValide) {
             overallGpaElement.textContent = 'Non Validé';
-            overallGpaElement.style.color = 'red';
+            overallGpaElement.style.color = '#c3202c';
         } else {
-            const finalGpa = totalWeightedMog / TOTAL_SEMESTER_ECTS; 
-            
-            overallGpaElement.textContent = finalGpa.toFixed(2);
-            overallGpaElement.style.color = finalGpa >= TARGET_MOG ? 'green' : 'red';
+            const overallGpa = totalWeightedMog / totalEctsCompleted;
+            overallGpaElement.textContent = overallGpa.toFixed(2);
+            overallGpaElement.style.color = overallGpa >= TARGET_MOG ? '#0a8a0a' : '#c3202c';
         }
-        
-    } else if (totalEctsCompleted > 0) {
-        // Some subjects are complete, others are not (Incomplete Status).
-        // The "Non Validé" status shouldn't override the "In Progress" status yet.
-        const overallGpaCurrent = totalWeightedMog / totalEctsCompleted; 
-        
-        // Note: I'm updating the denominator here to use TOTAL_SEMESTER_ECTS (30) as per the previous logic in the original code,
-        // but often the intermediate status is shown over the counted ECTS (totalEctsCounted). I'm keeping the 
-        // totalEctsCounted for consistency with the last version's intermediate display.
-        overallGpaElement.textContent = `${overallGpaCurrent.toFixed(2)} (${totalEctsCompleted}/${totalEctsCounted} ECTS complete)`;
-        overallGpaElement.style.color = 'orange';
+        return;
+    }
+
+    if (totalEctsCompleted > 0) {
+        const partialGpa = totalWeightedMog / totalEctsCompleted;
+        overallGpaElement.textContent = `${partialGpa.toFixed(2)} (${totalEctsCompleted}/${totalEctsCounted} ECTS)`;
+        overallGpaElement.style.color = '#cc8800';
     } else {
-        // Nothing is complete
-        overallGpaElement.textContent = '\u2014';
-        overallGpaElement.style.color = 'black';
+        overallGpaElement.textContent = 'In Progress';
+        overallGpaElement.style.color = '#666666';
     }
 }
 

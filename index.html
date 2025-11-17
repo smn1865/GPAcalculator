@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Grade Calculator</title>
-  <script src="calc.js" defer></script>
+  <title>GPA Calculators</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,24 +11,47 @@
     <a class="logo" href="/">
       <img src="ufar.png" alt="Ufar" />
     </a>
-<div class="grade-dropdown">
-  <a href="GpaCalculator.html" role="button" class="grade-btn">First Grade</a>
-  <div class="grade-menu">
-    <a href="Courses/calculus1.html">Mathematics 1</a>
-    <a href="Courses/analytic.html">Analytic Geometry &amp; Algebra</a>
-    <a href="Courses/statistics.html">Descriptive Statistics</a>
-    <a href="Courses/cs1.html">Reinforced Informatics 1</a>
-    <a href="Courses/becomestudent.html">Become Student</a>
-  </div>
-  <a href="GpaCalculator2.html" role="button" class="grade-btn">Second Grade</a>
-  <div class="grade-menu">
-    <a href="Courses/calculus1.html">Mathematics 1</a>
-    <a href="Courses/analytic.html">Analytic Geometry &amp; Algebra</a>
-    <a href="Courses/statistics.html">Descriptive Statistics</a>
-    <a href="Courses/cs1.html">Reinforced Informatics 1</a>
-    <a href="Courses/becomestudent.html">Become Student</a>
-  </div>
+    <div class="grade-dropdown">
+      <div class="grade-group">
+        <a href="GpaCalculator.html" role="button" class="grade-btn">First Grade</a>
+        <div class="grade-menu">
+          <a href="Courses/calculus1.html">Mathematics 1</a>
+          <a href="Courses/analytic.html">Analytic Geometry &amp; Algebra</a>
+          <a href="Courses/statistics.html">Descriptive Statistics</a>
+          <a href="Courses/cs1.html">Reinforced Informatics 1</a>
+          <a href="Courses/becomestudent.html">Become Student</a>
+        </div>
+      </div>
+
+      <div class="grade-group">
+        <a href="GpaCalculator2.html" role="button" class="grade-btn">Second Grade</a>
+        <div class="grade-menu">
+          <a href="Courses/calculus1.html">Mathematics 1</a>
+          <a href="Courses/analytic.html">Analytic Geometry &amp; Algebra</a>
+          <a href="Courses/statistics.html">Descriptive Statistics</a>
+          <a href="Courses/cs1.html">Reinforced Informatics 1</a>
+          <a href="Courses/becomestudent.html">Become Student</a>
+        </div>
+      </div>
+    </div>
+    <h1>Created by Erik Grigoryan and Gevorg Galstyan</h1>
   </header>
-</div>
+
+  <main class="landing">
+    <section class="hero-card">
+      <h2>Choose your semester</h2>
+      <p>Track your progress, check how much you need on the final, and ensure every bloc is validated.</p>
+      <div class="grade-actions">
+        <a class="grade-card" href="GpaCalculator.html">
+          <span>First Grade</span>
+          <small>1st semester modules</small>
+        </a>
+        <a class="grade-card" href="GpaCalculator2.html">
+          <span>Second Grade</span>
+          <small>2nd semester modules</small>
+        </a>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
