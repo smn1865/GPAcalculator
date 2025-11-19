@@ -54,6 +54,7 @@
         <th>Grade (final)</th>
         <th>Need</th>
         <th>Subject's GPA</th>
+        <th>Module Need</th>
         <th>Module's GPA</th>
         <th>Result</th>
         <th>Final GPA</th>
@@ -70,6 +71,7 @@
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
         <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="mog" rowspan="3">&mdash;</td>
         <td class="result" rowspan="3">&mdash;</td>
       </tr>
@@ -79,6 +81,7 @@
         <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="gpa">&mdash;</td>
         </tr>
       <tr data-bloc="1" data-subject-id="stats" data-midterm-weight="0.4" data-final-weight="0.6">
@@ -87,6 +90,7 @@
         <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="gpa">&mdash;</td>
         </tr>
     </tbody>
@@ -101,6 +105,7 @@
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
         <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="mog" rowspan="3">&mdash;</td>
         <td class="result" rowspan="3">&mdash;</td>
       </tr>
@@ -110,7 +115,9 @@
         <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="gpa">&mdash;</td>
+        <td id="overall-gpa">&mdash;</td>
         </tr>
       <tr data-bloc="2" data-subject-id="genai" data-midterm-weight="0.25" data-final-weight="0.75">
         <td><a href="calculus1.html">Generative AI</a></td>
@@ -118,6 +125,7 @@
         <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="gpa">&mdash;</td>
         </tr>
     </tbody>
@@ -132,6 +140,7 @@
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
         <td class="gpa">&mdash;</td>
+        <td class="mogneed" rowspan="1">&mdash;</td>
         <td class="mog" rowspan="1">&mdash;</td>
         <td class="result" rowspan="1">&mdash;</td>
       </tr>
@@ -147,6 +156,7 @@
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
         <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="mog" rowspan="3">&mdash;</td>
         <td class="result" rowspan="3">&mdash;</td>
       </tr>
@@ -156,6 +166,7 @@
         <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="gpa">&mdash;</td>
         </tr>
       <tr data-bloc="4" data-subject-id="german" data-midterm-weight="0.2" data-final-weight="0.8">
@@ -164,15 +175,10 @@
         <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
         <td class="avg">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
         <td class="gpa">&mdash;</td>
         </tr>
     </tbody>
-    <tfoot>
-      <tr class="overall-row">
-        <td colspan="10">Overall GPA</td>
-        <td id="overall-gpa">&mdash;</td>
-      </tr>
-    </tfoot>
   </table>
 </body>
 </html>
