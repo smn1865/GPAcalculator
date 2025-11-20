@@ -126,54 +126,136 @@ function updateSubjectCalculation(row) {
 /**
  * Calculates the Module MOG, MOG Need, and Module Result.
  */
+/**
+ * Calculates the Module MOG, Module Need, and Module Result.
+ */
 function updateBlocCalculation(blocBody) {
     const rows = blocBody.querySelectorAll('tr[data-subject-id]');
     let totalWeightedGradeCompleted = 0;
-    let countedEcts = 0; // ECTS that must be completed for the bloc (excludes unused electives)
+    let countedEcts = 0;   // ECTS that must be completed for the bloc (excludes unused electives)
     let completedEcts = 0; // ECTS for subjects with full grades
-    
+
+    // --- New variables for "Module Need" (bloc target MOG = TARGET_MOG) ---
+    let totalMidtermContribution = 0;        // Σ (ECTS_i * midtermWeight_i * midterm_i)
+    let totalFinalContributionKnown = 0;     // Σ (ECTS_i * finalWeight_i * final_i) for already-entered finals
+    let totalFinalWeightEctsMissing = 0;     // Σ (ECTS_i * finalWeight_i) for finals that are still empty
+    let canComputeModuleNeed = true;         // becomes false if some needed midterm is missing
+
     rows.forEach(row => {
         const ectsCell = row.querySelector('.ects');
-        const gpaCell = row.querySelector('.gpa'); 
+        const gpaCell = row.querySelector('.gpa');
         const finalInput = row.querySelector('.final');
         const midtermInput = row.querySelector('.midterm');
 
         const ects = parseFloat(ectsCell.textContent);
-        
+
         if (!isNaN(ects) && ects > 0) {
-            
+
             // Check if the subject is actively being counted (i.e., not a disabled elective)
-            const isCountedSubject = !row.querySelector('.midterm').disabled;
-            
+            const isCountedSubject = !midtermInput.disabled;
+
             if (isCountedSubject) {
                 countedEcts += ects;
-                
-                const isCompleted = !isNaN(parseFloat(midtermInput.value)) && !isNaN(parseFloat(finalInput.value));
-                const grade = parseFloat(gpaCell.textContent); 
+
+                const midVal = parseFloat(midtermInput.value);
+                const finVal = parseFloat(finalInput.value);
+                const weights = getWeightsFromRow(row);
+
+                // --- Collect contributions for Module Need ---
+
+                // Midterms contribute only if their weight > 0
+                if (weights.midterm > 0) {
+                    if (isNaN(midVal)) {
+                        // We cannot correctly compute module need if a required midterm is missing
+                        canComputeModuleNeed = false;
+                    } else {
+                        totalMidtermContribution += ects * weights.midterm * midVal;
+                    }
+                }
+
+                // Finals: known vs missing
+                if (!isNaN(finVal)) {
+                    totalFinalContributionKnown += ects * weights.final * finVal;
+                } else if (weights.final > 0) {
+                    // This final is still empty, so it will share the same required K
+                    totalFinalWeightEctsMissing += ects * weights.final;
+                }
+
+                // --- Existing logic for current MOG calculation ---
+                const isCompleted = !isNaN(midVal) && !isNaN(finVal);
+                const grade = parseFloat(gpaCell.textContent); // subject GPA already computed
 
                 if (isCompleted && !isNaN(grade)) {
                     totalWeightedGradeCompleted += grade * ects;
                     completedEcts += ects;
                 } else {
-                    incompleteSubjects.push({ row: row, ects: ects });
+                    // This assumes incompleteSubjects is defined elsewhere in your code
+                    if (typeof incompleteSubjects !== 'undefined') {
+                        incompleteSubjects.push({ row: row, ects: ects });
+                    }
                 }
             }
         }
     });
 
-    // --- Part 1: Current MOG Calculation ---
+    // --- New Part: Module Need (bloc-level target MOG = TARGET_MOG) ---
+    const moduleNeedCells = blocBody.querySelectorAll('.mogneed');
+    let moduleNeedText = '\u2014';
+
+    if (countedEcts > 0 && canComputeModuleNeed) {
+        // Total grade "mass" we must have for MOG = TARGET_MOG
+        const requiredTotalGrade = TARGET_MOG * countedEcts;
+
+        // Current contribution from midterms and already-known finals
+        const currentContribution = totalMidtermContribution + totalFinalContributionKnown;
+
+        // How much the *remaining* finals must still contribute
+        const remainingContribution = requiredTotalGrade - currentContribution;
+
+        if (totalFinalWeightEctsMissing > 0) {
+            // Assume the same final K for all remaining finals:
+            //   K * Σ(ECTS_i * finalWeight_i) = remainingContribution
+            const requiredFinalAvg = remainingContribution / totalFinalWeightEctsMissing;
+
+            if (!isFinite(requiredFinalAvg)) {
+                moduleNeedText = 'Impossible';
+            } else if (requiredFinalAvg <= 0) {
+                // Even with 0 on all remaining finals, MOG would be >= TARGET_MOG
+                moduleNeedText = '0.0';
+            } else if (requiredFinalAvg > 20) {
+                // Can't reach the target with max finals = 20
+                moduleNeedText = 'Impossible';
+            } else {
+                moduleNeedText = `Need ${requiredFinalAvg.toFixed(2)}`;
+            }
+        } else {
+            // No finals left to adjust (all finals known or their weight is 0)
+            const achievedMogIfFrozen = currentContribution / countedEcts;
+            if (achievedMogIfFrozen >= TARGET_MOG) {
+                moduleNeedText = '0.0';       // already ≥ 10, nothing more needed
+            } else {
+                moduleNeedText = 'Impossible'; // nothing left to change to reach 10
+            }
+        }
+    }
+
+    // Write the same module need text in every .mogneed cell of this bloc
+    moduleNeedCells.forEach(cell => {
+        cell.textContent = moduleNeedText;
+    });
+
+    // --- Part 1: Current MOG Calculation (unchanged, except using our accumulators) ---
     const mogCell = blocBody.querySelector('.mog');
     const resultCell = blocBody.querySelector('.result');
-    
+
     let currentMog = 0;
-    
+
     if (completedEcts > 0) {
         currentMog = totalWeightedGradeCompleted / completedEcts;
         mogCell.textContent = currentMog.toFixed(2);
     } else {
         mogCell.textContent = '\u2014';
     }
-    
 
     // --- Part 3: Result Fix (Check against counted ECTS) ---
     if (countedEcts > 0) {
@@ -186,9 +268,9 @@ function updateBlocCalculation(blocBody) {
         }
     } else {
         // Module has 0 ECTS or no active subjects (e.g., waiting for elective choice)
-         resultCell.textContent = '\u2014';
+        resultCell.textContent = '\u2014';
     }
-    
+
     // Trigger the Overall GPA update
     updateOverallGPA();
 }
