@@ -131,7 +131,6 @@ table.grades tfoot td:first-child {
   font-size: 18px;
   color: #002399;
 }
-
 /* Inputs */
 
 table.grades input[type="number"] {
@@ -287,4 +286,102 @@ table.grades input[type="number"]:focus {
 .grade-group:focus-within .grade-menu,
 .grade-menu:hover {
   display: block;
+}
+
+
+/* ===== Login dropdown ===== */
+
+.login-wrapper {
+  position: relative;
+  margin-left: 16px;
+}
+
+/* Make login button look like the other header buttons */
+.login-btn {
+  margin-left: 0;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #002399; /* or #f42a39 if you prefer same as others */
+  border: 1px solid #002399;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #001772;
+  border-color: #001772;
+}
+
+/* Dropdown panel */
+.login-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 12px 14px 10px;
+  min-width: 220px;
+  display: none;       /* hidden by default */
+  z-index: 2000;
+}
+
+.login-panel.visible {
+  display: block;
+}
+
+.login-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-panel label {
+  font-size: 12px;
+  color: #444444;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.login-panel input[type="text"],
+.login-panel input[type="password"] {
+  padding: 6px 8px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #cccccc;
+}
+
+.login-panel input:focus {
+  outline: none;
+  border-color: #002399;
+}
+
+.login-submit {
+  margin-top: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  background-color: #f42a39;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.login-submit:hover {
+  background-color: #c3202c;
+}
+
+.login-error {
+  margin-top: 4px;
+  min-height: 16px;
+  font-size: 12px;
+  color: #d00000;
 }

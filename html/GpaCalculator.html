@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Grade Calculator</title>
-  <script src="calc.js" defer></script>
-  <link rel="stylesheet" href="style.css" />
+  <script src="../js/calc.js" defer></script>
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <header>
     <a class="logo" href="/">
-      <img src="ufar.png" alt="Ufar" />
+      <img src="../Sources/ufar.png" alt="Ufar" />
     </a>
 <div class="grade-dropdown">
 
@@ -40,7 +40,6 @@
 
     <h1>Created by Erik Grigoryan and Gevorg Galstyan</h1>
   </header>
-
   <h4>1st Semester</h4>
 
   <table class="grades">
@@ -196,5 +195,174 @@
         </tr>
     </tbody>
   </table>
+
+  <h4>2nd Semester</h4>
+
+  <table class="grades grades-sem2">
+    <thead>
+      <tr>
+        <th>Bloc</th>
+        <th>Subject</th>
+        <th>ECTS</th>
+        <th>Overall ECTS</th>
+        <th>Grade (midterm)</th>
+        <th>Grade (final)</th>
+        <th>Prefered grade</th>
+        <th>Need</th>
+        <th>Subject's GPA</th>
+        <th>Block prefered grade</th> 
+        <th>Block Need</th>
+        <th>Block's GPA</th>
+        <th>Result</th>
+        <th>Final GPA</th>
+      </tr>
+    </thead>
+
+    <!-- Bloc 1 -->
+    <tbody class="bloc2 bloc2-1" data-bloc2="1">
+      <tr data-bloc2="1" data-subject2-id="calculus2" data-midterm-weight="0.4" data-final-weight="0.6">
+        <td class="bloc-cell" rowspan="3">1</td>
+        <td><a href="Courses/calculus2.html">Calculus II</a></td>
+        <td class="ects">6</td>
+        <td class="overall-cell" rowspan="3">13</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="block-prefered" rowspan="3">
+          <input class="pref-block-gpa" type="number" min="0" max="4" step="0.01" placeholder="0-4" />
+        </td> 
+        <td class="mogneed">&mdash;</td>
+        <td class="mog" rowspan="3">&mdash;</td>
+        <td class="result" rowspan="3">&mdash;</td>
+      </tr>
+      <tr data-bloc2="1" data-subject2-id="algebra2" data-midterm-weight="0.4" data-final-weight="0.6">
+        <td><a href="Courses/analytic2.html">Analytic Geometry II</a></td>
+        <td class="ects">4</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
+      </tr>
+      <tr data-bloc2="1" data-subject2-id="probability" data-midterm-weight="0.4" data-final-weight="0.6">
+        <td><a href="Courses/probability.html">Probability &amp; Statistics</a></td>
+        <td class="ects">3</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
+      </tr>
+    </tbody>
+
+    <!-- Bloc 2 -->
+    <tbody class="bloc2 bloc2-2" data-bloc2="2">
+      <tr data-bloc2="2" data-subject2-id="cs2" data-midterm-weight="0.5" data-final-weight="0.5">
+        <td class="bloc-cell" rowspan="3">2</td>
+        <td><a href="Courses/cs2.html">Reinforced CS II</a></td>
+        <td class="ects">4</td>
+        <td class="overall-cell" rowspan="3">8</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="block-prefered" rowspan="3">
+          <input class="pref-block-gpa" type="number" min="0" max="4" step="0.01" placeholder="0-4" />
+        </td> 
+        <td class="mogneed">&mdash;</td>
+        <td class="mog" rowspan="3">&mdash;</td>
+        <td class="result" rowspan="3">&mdash;</td>
+      </tr>
+      <tr data-bloc2="2" data-subject2-id="webdev" data-midterm-weight="0.25" data-final-weight="0.75">
+        <td><a href="Courses/webdev.html">Web Development Basics</a></td>
+        <td class="ects">3</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
+        <td id="overall-gpa-2">&mdash;</td>
+      </tr>
+      <tr data-bloc2="2" data-subject2-id="dataviz" data-midterm-weight="0.25" data-final-weight="0.75">
+        <td><a href="Courses/dataviz.html">Data Visualization</a></td>
+        <td class="ects">1</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
+      </tr>
+    </tbody>
+
+    <!-- Bloc 3 -->
+    <tbody class="bloc2 bloc2-3" data-bloc2="3">
+      <tr data-bloc2="3" data-subject2-id="french2" data-midterm-weight="0" data-final-weight="1">
+        <td class="bloc-cell" rowspan="1">3</td>
+        <td><a href="Courses/french2.html">French II</a></td>
+        <td class="ects">5</td>
+        <td class="overall-cell" rowspan="1">5</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="block-prefered" rowspan="1">
+          <input class="pref-block-gpa" type="number" min="0" max="4" step="0.01" placeholder="0-4" />
+        </td> 
+        <td class="mogneed" rowspan="1">&mdash;</td>
+        <td class="mog" rowspan="1">&mdash;</td>
+        <td class="result" rowspan="1">&mdash;</td>
+      </tr>
+    </tbody>
+
+    <!-- Bloc 4 (English + Spanish/German electives) -->
+    <tbody class="bloc2 bloc2-4" data-bloc2="4">
+      <tr data-bloc2="4" data-subject2-id="english2" data-midterm-weight="0.2" data-final-weight="0.8">
+        <td class="bloc-cell" rowspan="3">4</td>
+        <td><a href="Courses/english2.html">English II</a></td>
+        <td class="ects">3</td>
+        <td class="overall-cell" rowspan="3">4</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="block-prefered" rowspan="3">
+          <input class="pref-block-gpa" type="number" min="0" max="4" step="0.01" placeholder="0-4" />
+        </td> 
+        <td class="mogneed">&mdash;</td>
+        <td class="mog" rowspan="3">&mdash;</td>
+        <td class="result" rowspan="3">&mdash;</td>
+      </tr>
+      <tr data-bloc2="4" data-subject2-id="spanish2" data-midterm-weight="0.2" data-final-weight="0.8">
+        <td><a href="Courses/spanish2.html">Spanish II</a></td>
+        <td class="ects">1</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
+      </tr>
+      <tr data-bloc2="4" data-subject2-id="german2" data-midterm-weight="0.2" data-final-weight="0.8">
+        <td><a href="Courses/german2.html">German II</a></td>
+        <td class="ects">1</td>
+        <td><input class="midterm" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td><input class="prefered-final" type="number" min="0" max="20" step="0.1" placeholder="0-20" /></td>
+        <td class="avg">&mdash;</td>
+        <td class="gpa">&mdash;</td>
+        <td class="mogneed">&mdash;</td>
+      </tr>
+    </tbody>
+  </table>
+
 </body>
 </html>

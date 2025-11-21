@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GPA Calculators</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../css/indexstyle.css" />
+  <!-- NEW: login logic -->
+  <script src="../js/login.js" defer></script>
 </head>
 <body>
   <header>
     <a class="logo" href="/">
-      <img src="ufar.png" alt="Ufar" />
+      <img src="../Sources/ufar.png" alt="Ufar" />
     </a>
+
     <div class="grade-dropdown">
       <div class="grade-group">
         <a href="GpaCalculator.html" role="button" class="grade-btn">First Grade</a>
@@ -34,7 +37,27 @@
         </div>
       </div>
     </div>
+
+    <div class="login-wrapper">
+      <button type="button" class="login-btn">Login</button>
+      <div id="login-panel" class="login-panel">
+        <form id="login-form" autocomplete="off">
+          <label>
+            Login
+            <input type="text" id="login-username" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="login-password" required />
+          </label>
+          <button type="submit" class="login-submit">Enter</button>
+          <div id="login-error" class="login-error"></div>
+        </form>
+      </div>
+    </div>
+
     <h1>Created by Erik Grigoryan and Gevorg Galstyan</h1>
   </header>
+
 </body>
 </html>

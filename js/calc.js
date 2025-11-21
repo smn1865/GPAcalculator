@@ -384,3 +384,289 @@ document.addEventListener('DOMContentLoaded', () => {
     // Finally, run the Overall GPA update.
     updateOverallGPA();
 });
+
+
+// =========================
+// SECOND SEMESTER LOGIC
+// =========================
+
+function updateSubjectCalculation2(row) {
+    const midtermInput = row.querySelector('.midterm');
+    const finalInput = row.querySelector('.final');
+    const avgCell = row.querySelector('.avg'); 
+    const gpaCell = row.querySelector('.gpa'); 
+
+    const weights = getWeightsFromRow(row); 
+    
+    let midterm = parseFloat(midtermInput.value);
+    let final = parseFloat(finalInput.value);
+    
+    if (!isNaN(midterm)) {
+        midterm = clampGrade(midterm);
+        midtermInput.value = midterm; 
+    }
+    if (!isNaN(final)) {
+        final = clampGrade(final);
+        finalInput.value = final; 
+    }
+
+    // Subject-level "Need" (required final to pass the subject)
+    if (!isNaN(midterm)) {
+        const requiredFinal = calculateRequiredFinalScore(midterm, weights);
+        
+        if (requiredFinal <= 0) {
+            avgCell.textContent = '0.0'; 
+        } else if (requiredFinal > 20) {
+            avgCell.textContent = 'Impossible';
+        } else {
+            avgCell.textContent = `Need ${requiredFinal.toFixed(2)}`;
+        }
+    } else {
+        avgCell.textContent = '\u2014';
+    }
+
+    // Subject GPA
+    if (isNaN(midterm) || isNaN(final)) {
+        gpaCell.textContent = '\u2014';
+    } else {
+        const weightedAvg = calculateWeightedAverage(midterm, final, weights);
+        gpaCell.textContent = weightedAvg.toFixed(2);
+    }
+    
+    const blocBody = row.closest('.bloc2');
+    if (blocBody) {
+        updateBlocCalculation2(blocBody);
+    }
+}
+
+/**
+ * Bloc-level calculation for 2nd semester:
+ * - Bloc MOG
+ * - Bloc Need (module need)
+ * - Bloc Result ("Validé", "Non Validé", "In Progress")
+ */
+function updateBlocCalculation2(blocBody) {
+    const rows = blocBody.querySelectorAll('tr[data-subject2-id]');
+    let totalWeightedGradeCompleted = 0;
+    let countedEcts = 0;
+    let completedEcts = 0;
+
+    let totalMidtermContribution = 0;
+    let totalFinalContributionKnown = 0;
+    let totalFinalWeightEctsMissing = 0;
+    let canComputeModuleNeed = true;
+
+    rows.forEach(row => {
+        const ectsCell = row.querySelector('.ects');
+        const gpaCell = row.querySelector('.gpa');
+        const finalInput = row.querySelector('.final');
+        const midtermInput = row.querySelector('.midterm');
+
+        const ects = parseFloat(ectsCell.textContent);
+
+        if (!isNaN(ects) && ects > 0) {
+            const isCountedSubject = !midtermInput.disabled;
+
+            if (isCountedSubject) {
+                countedEcts += ects;
+
+                const midVal = parseFloat(midtermInput.value);
+                const finVal = parseFloat(finalInput.value);
+                const weights = getWeightsFromRow(row);
+
+                // Module need contributions
+                if (weights.midterm > 0) {
+                    if (isNaN(midVal)) {
+                        canComputeModuleNeed = false;
+                    } else {
+                        totalMidtermContribution += ects * weights.midterm * midVal;
+                    }
+                }
+
+                if (!isNaN(finVal)) {
+                    totalFinalContributionKnown += ects * weights.final * finVal;
+                } else if (weights.final > 0) {
+                    totalFinalWeightEctsMissing += ects * weights.final;
+                }
+
+                // Current MOG contributions
+                const isCompleted = !isNaN(midVal) && !isNaN(finVal);
+                const grade = parseFloat(gpaCell.textContent);
+
+                if (isCompleted && !isNaN(grade)) {
+                    totalWeightedGradeCompleted += grade * ects;
+                    completedEcts += ects;
+                } else {
+                    if (typeof incompleteSubjects !== 'undefined') {
+                        incompleteSubjects.push({ row: row, ects: ects });
+                    }
+                }
+            }
+        }
+    });
+
+    // Bloc-level "Module Need" (MOG target = TARGET_MOG)
+    const moduleNeedCells = blocBody.querySelectorAll('.mogneed');
+    let moduleNeedText = '\u2014';
+
+    if (countedEcts > 0 && canComputeModuleNeed) {
+        const requiredTotalGrade = TARGET_MOG * countedEcts;
+        const currentContribution = totalMidtermContribution + totalFinalContributionKnown;
+        const remainingContribution = requiredTotalGrade - currentContribution;
+
+        if (totalFinalWeightEctsMissing > 0) {
+            const requiredFinalAvg = remainingContribution / totalFinalWeightEctsMissing;
+
+            if (!isFinite(requiredFinalAvg)) {
+                moduleNeedText = 'Impossible';
+            } else if (requiredFinalAvg <= 0) {
+                moduleNeedText = '0.0';
+            } else if (requiredFinalAvg > 20) {
+                moduleNeedText = 'Impossible';
+            } else {
+                moduleNeedText = `Need ${requiredFinalAvg.toFixed(2)}`;
+            }
+        } else {
+            const achievedMogIfFrozen = currentContribution / countedEcts;
+            if (achievedMogIfFrozen >= TARGET_MOG) {
+                moduleNeedText = '0.0';
+            } else {
+                moduleNeedText = 'Impossible';
+            }
+        }
+    }
+
+    moduleNeedCells.forEach(cell => {
+        cell.textContent = moduleNeedText;
+    });
+
+    // Current MOG & Result for this bloc
+    const mogCell = blocBody.querySelector('.mog');
+    const resultCell = blocBody.querySelector('.result');
+
+    let currentMog = 0;
+
+    if (completedEcts > 0) {
+        currentMog = totalWeightedGradeCompleted / completedEcts;
+        mogCell.textContent = currentMog.toFixed(2);
+    } else {
+        mogCell.textContent = '\u2014';
+    }
+
+    if (countedEcts > 0) {
+        if (completedEcts === countedEcts) {
+            resultCell.textContent = currentMog >= TARGET_MOG ? 'Validé' : 'Non Validé';
+        } else {
+            resultCell.textContent = 'In Progress';
+        }
+    } else {
+        resultCell.textContent = '\u2014';
+    }
+
+    updateOverallGPA2();
+}
+
+/**
+ * Overall GPA for 2nd semester.
+ */
+function updateOverallGPA2() {
+    const blocBodies = document.querySelectorAll('.bloc2');
+    const overallGpaElement = document.getElementById('overall-gpa-2');
+
+    if (!overallGpaElement || blocBodies.length === 0) {
+        return;
+    }
+
+    let totalWeightedMog = 0;
+    let totalEctsCounted = 0;
+    let totalEctsCompleted = 0;
+    let isAnyBlocNonValide = false;
+
+    blocBodies.forEach(blocBody => {
+        const rows = blocBody.querySelectorAll('tr[data-subject2-id]');
+        const mogCell = blocBody.querySelector('.mog');
+        const resultCell = blocBody.querySelector('.result');
+        const mogText = mogCell ? mogCell.textContent : '';
+        const resultText = resultCell ? resultCell.textContent.trim() : '';
+
+        const mog = parseFloat(mogText);
+        let blocEcts = 0;
+        let blocCompletedEcts = 0;
+
+        rows.forEach(row => {
+            const ects = parseFloat(row.querySelector('.ects').textContent);
+            const midtermInput = row.querySelector('.midterm');
+            const finalInput = row.querySelector('.final');
+
+            if (!midtermInput || !finalInput) return;
+
+            if (!midtermInput.disabled && !isNaN(ects) && ects > 0) {
+                blocEcts += ects;
+
+                const hasMidterm = !isNaN(parseFloat(midtermInput.value));
+                const hasFinal = !isNaN(parseFloat(finalInput.value));
+                if (hasMidterm && hasFinal) {
+                    blocCompletedEcts += ects;
+                }
+            }
+        });
+
+        totalEctsCounted += blocEcts;
+
+        if ((resultText === 'Validé' || resultText === 'Non Validé') && blocEcts > 0 && !isNaN(mog)) {
+            totalWeightedMog += mog * blocEcts;
+            totalEctsCompleted += blocEcts;
+
+            if (resultText === 'Non Validé') {
+                isAnyBlocNonValide = true;
+            }
+        }
+    });
+
+    if (totalEctsCounted === 0) {
+        overallGpaElement.textContent = '\u2014';
+        overallGpaElement.style.color = '#222222';
+        return;
+    }
+
+    if (totalEctsCompleted === totalEctsCounted && totalEctsCompleted > 0) {
+        if (isAnyBlocNonValide) {
+            overallGpaElement.textContent = 'Non Validé';
+            overallGpaElement.style.color = '#c3202c';
+        } else {
+            const overallGpa = totalWeightedMog / totalEctsCompleted;
+            overallGpaElement.textContent = overallGpa.toFixed(2);
+            overallGpaElement.style.color = overallGpa >= TARGET_MOG ? '#0a8a0a' : '#c3202c';
+        }
+        return;
+    }
+
+    if (totalEctsCompleted > 0) {
+        const partialGpa = totalWeightedMog / totalEctsCompleted;
+        overallGpaElement.textContent = `${partialGpa.toFixed(2)} (${totalEctsCompleted}/${totalEctsCounted} ECTS)`;
+        overallGpaElement.style.color = '#cc8800';
+    } else {
+        overallGpaElement.textContent = 'In Progress';
+        overallGpaElement.style.color = '#666666';
+    }
+}
+
+// --- Initialization for 2nd semester ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    const gradeInputs2 = document.querySelectorAll(
+        'tr[data-subject2-id] input.midterm, tr[data-subject2-id] input.final'
+    );
+
+    gradeInputs2.forEach(input => {
+        const row = input.closest('tr[data-subject2-id]');
+        if (row) {
+            input.addEventListener('input', () => updateSubjectCalculation2(row));
+        }
+    });
+
+    // Initial calculations for semester 2
+    document.querySelectorAll('tr[data-subject2-id]').forEach(row => updateSubjectCalculation2(row));
+    document.querySelectorAll('.bloc2').forEach(updateBlocCalculation2);
+    updateOverallGPA2();
+});
