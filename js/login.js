@@ -1,25 +1,15 @@
-// ../js/login.js
-
-// 1) Here you define all allowed users.
-//    username: what they type in "Login"
-//    password: what they type in "Password"
-//    grade: which grade/page they should go to
+// Usernery
 
 const USERS = [
   { username: "I25.Grigoryan.Erik@etud.ufar.am", password: "1234", grade: 1, firstName: "MyLord"},
   { username: "I25.Gasparyan.Gevorg@etud.ufar.am", password: "5678", grade: 1, firstName: "Gev" },
   { username: "I24.OfaOfa@etud.ufar.am", password: "abcd", grade: 2, firstName: "Ofa" },
-  // TODO: add the rest of your ~300 users here
-  // { username: "XXXX", password: "YYYY", grade: 1 },
-  // { username: "AAAA", password: "BBBB", grade: 2 },
 ];
 
-// 2) Where each grade should be redirected.
-//    Change these paths to whatever you actually use.
+// pathery
 const GRADE_ROUTES = {
-  1: "Grade1.html",   // Grade 1 panel/page
-  2: "GpaCalculator2.html",  // Grade 2 panel/page
-  // 3: "grade3.html", etc. if you add more
+  1: "Grade1.html", 
+  2: "GpaCalculator2.html",
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -31,8 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const passInput = document.getElementById("login-password");
 
   if (!toggleBtn || !panel || !form) return;
-
-  // Show/hide the small login block
+    // knopki hide/show
   toggleBtn.addEventListener("click", () => {
     panel.classList.toggle("visible");
     errorBox.textContent = "";
@@ -41,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Optional: close when clicking outside
+  // knopki close
   document.addEventListener("click", (e) => {
     if (
       !panel.contains(e.target) &&
@@ -52,14 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Handle login submit
+  // knopka submit
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const username = userInput.value.trim();
     const password = passInput.value;
 
-    // Find matching user
     const user = USERS.find(
       (u) => u.username === username && u.password === password
     );
@@ -76,12 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ✅ Save info for the next page (only for this tab)
+    // helloi hmar
     sessionStorage.setItem("currentUserFirstName", user.firstName);
     sessionStorage.setItem("currentUserGrade", String(user.grade));
     sessionStorage.setItem("currentUsername", user.username);
 
-    // Redirect to their grade page
+    // redirecty
     window.location.href = target;
   });
 });
